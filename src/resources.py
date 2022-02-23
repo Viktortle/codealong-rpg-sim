@@ -1,6 +1,12 @@
-from numpy import character
-
-
+from random import choice, randint
+class Weapon:
+    def __init__(self, name, damage):
+        self.name = name
+        self.damage = damage
+    
+    def return_damage(self):
+        return self.damage
+        
 class Character:
 
     def __init__(self, name, health, damage, armor):
@@ -33,12 +39,20 @@ class Goblin:
     def __init__(self, id):
         self.id = id
         self.health = 10
-        self.damage = 3
         self.armor = 2
+        self.give_weapon()
+        self.damage = self.weapon.return_damage()
 
     def __str__(self):
         return f"Goblin id: {self.id}\nHealth: {self.health}\nDamage: {self.damage}\nArmor: {self.armor}"
-    
+
+    def give_weapon(self):
+        weapons = []
+        weapons.append(Weapon("Rusty Spear", 3))
+        weapons.append(Weapon("Rusty Cleaver", 2))
+        weapons.append(Weapon("Stone Axe", 1))
+        self.weapon = choice(weapons)
+
     def take_damage(self, dmg):
         actual_damage = dmg - self.armor
         if actual_damage < 0: actual_damage = 0
@@ -52,19 +66,23 @@ class Goblin:
     def get_name(self):
         return f"Goblin #{self.id}"
 
-def save_character(character: Character):
+def save_character(characters: list()):
     """
     Tar in karaktär, bryter ner dess attribut och sparar ner på fil.
 
     Args: 
         character (Character): Det objekt som ska sparas ner på fil
     """
-    name, health, damage, armor = character.get_all_attributes()
+    saved_characters = []
+    for character in characters:
+        name, health, damage, armor = character.get_all_attributes()
+        save_string = f"{name}/{health}/{damage}/{armor}\n"
+        saved_characters.append(save_string)
 
     with open("character_file.txt", "w", encoding="utf8") as f:
-        save_string = f"{name}/{health}/{damage}/{armor}\n"
-        f.write(save_string)
-        print(f"{name} has been successfully saved.")
+        for char in saved_characters:
+            f.write(char)
+        print("Characters have been successfully saved.")
 
 def load_characters():
     with open("character_file.txt", "r", encoding="utf8") as f:
@@ -75,3 +93,16 @@ def load_characters():
             characters.append(this_char)
     print("Characters have been loaded successfully!")
     return characters
+
+def create_character():
+    print("Welcome to the character creation!")
+    print("What is your character called?")
+    name = input("Name: ")
+    health = randint(10, 25)
+    damage = randint(1,6)
+    armor = randint(0,5)
+
+    return_char = Character(name, health, damage, armor)
+    print("You have created the following character.")
+    print(return_char)
+    return return_char
